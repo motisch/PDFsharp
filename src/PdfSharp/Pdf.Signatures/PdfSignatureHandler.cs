@@ -129,10 +129,16 @@ namespace PdfSharp.Pdf.Signatures
             this.contentsTraker = new PositionTracker(paddedContents);
             this.rangeTracker = new PositionTracker(paddedRange);
 
-            if (!Document.Pages[0].Elements.ContainsKey(PdfPage.Keys.Annots))
+            var annotations = Document.Pages[0].Elements.GetArray(PdfPage.Keys.Annots);
+            if (annotations == null)
+            {
                 Document.Pages[0].Elements.Add(PdfPage.Keys.Annots, new PdfArray(Document));
-
-            (Document.Pages[0].Elements[PdfPage.Keys.Annots] as PdfArray).Elements.Add(signature);
+                (Document.Pages[0].Elements[PdfPage.Keys.Annots] as PdfArray).Elements.Add(signature);
+            }
+            else
+            {
+                annotations.Elements.Add(signature);
+            }
                         
             catalog.AcroForm.Fields.Elements.Add(signature);
 
